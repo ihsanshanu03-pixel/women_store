@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Orders</title>
+</head>
+<body>
+  <script>
+requireAuth();
+</script>
+
+
+<h2>My Orders</h2>
+<div id="orders"></div>
+
+<script>
+const API_URL = "http://127.0.0.1:8000";
+const token = localStorage.getItem("token");
+
+fetch(`${API_URL}/api/orders/`, {
+  headers: { "Authorization": "Bearer " + token }
+})
+.then(res => res.json())
+.then(orders => {
+  const div = document.getElementById("orders");
+  orders.forEach(order => {
+    div.innerHTML += `<p>Order #${order.id} - ₹${order.total_price}</p>`;
+  });
+});
+</script>
+
+</body>
+</html>

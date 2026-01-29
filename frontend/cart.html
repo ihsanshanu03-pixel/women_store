@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cart</title>
+</head>
+<body>
+
+
+
+
+<h2>Your Cart</h2>
+<div id="cart"></div>
+
+<!-- 1️⃣ Load JS file first -->
+<script src="js/app.js"></script>
+
+<!-- 2️⃣ Then call function -->
+<script>
+  requireAuth();
+</script>
+
+
+<button onclick="checkout()">Checkout</button>
+
+<script>
+const API_URL = "http://127.0.0.1:8000";
+const token = localStorage.getItem("token");
+
+fetch(`${API_URL}/api/cart/`, {
+  headers: { "Authorization": "Bearer " + token }
+})
+.then(res => res.json())
+.then(items => {
+  const div = document.getElementById("cart");
+  items.forEach(item => {
+    div.innerHTML += `<p>${item.product.name} - ${item.quantity}</p>`;
+  });
+});
+
+function checkout() {
+  fetch(`${API_URL}/api/orders/checkout/`, {
+    method: "POST",
+    headers: { "Authorization": "Bearer " + token }
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert("Order placed!");
+    window.location.href = "orders.html";
+  });
+}
+</script>
+
+</body>
+</html>
