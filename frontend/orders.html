@@ -1,31 +1,189 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Orders</title>
+  <meta charset="UTF-8">
+  <title>My Orders | Women Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: #000;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: auto;
+      padding: 60px 20px;
+    }
+
+    h1 {
+      font-size: 42px;
+      font-weight: 800;
+      margin-bottom: 30px;
+    }
+
+    /* ---------- EMPTY ORDERS ---------- */
+    .empty-orders {
+      display: none;
+      margin-top: 40px;
+    }
+
+    .empty-orders p {
+      font-size: 16px;
+      color: #444;
+      margin-bottom: 25px;
+    }
+
+    .shop-btn {
+      display: inline-block;
+      background: #000;
+      color: #fff;
+      padding: 14px 28px;
+      text-decoration: none;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .shop-btn:hover {
+      background: #333;
+    }
+
+    /* ---------- ORDER CARD ---------- */
+    .order-card {
+      border: 1px solid #ddd;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .order-id {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .order-date {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .order-body {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .order-info p {
+      font-size: 14px;
+      margin: 6px 0;
+      color: #444;
+    }
+
+    .order-total {
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .order-status {
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .status-placed {
+      color: green;
+    }
+
+    /* ---------- MOBILE ---------- */
+    @media (max-width: 700px) {
+      h1 {
+        font-size: 32px;
+      }
+
+      .order-body {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <script>
-requireAuth();
-</script>
 
+<div class="page">
 
-<h2>My Orders</h2>
-<div id="orders"></div>
+  <h1>MY ORDERS</h1>
 
+  <!-- EMPTY STATE -->
+  <div id="emptyOrders" class="empty-orders">
+    <p>You haven’t placed any orders yet.</p>
+    <a href="index.html" class="shop-btn">START SHOPPING →</a>
+  </div>
+
+  <!-- ORDERS LIST -->
+  <div id="orders"></div>
+
+</div>
+
+<!-- AUTH -->
+<script src="js/app.js"></script>
 <script>
-const API_URL = "http://127.0.0.1:8000";
-const token = localStorage.getItem("token");
+  requireAuth();
 
-fetch(`${API_URL}/api/orders/`, {
-  headers: { "Authorization": "Bearer " + token }
-})
-.then(res => res.json())
-.then(orders => {
-  const div = document.getElementById("orders");
-  orders.forEach(order => {
-    div.innerHTML += `<p>Order #${order.id} - ₹${order.total_price}</p>`;
+  const API_URL = "http://127.0.0.1:8000";
+  const token = localStorage.getItem("token");
+
+  const ordersDiv = document.getElementById("orders");
+  const emptyOrders = document.getElementById("emptyOrders");
+
+  fetch(`${API_URL}/api/orders/`, {
+    headers: { "Authorization": "Bearer " + token }
+  })
+  .then(res => res.json())
+  .then(orders => {
+
+    if (!orders || orders.length === 0) {
+      emptyOrders.style.display = "block";
+      return;
+    }
+
+    orders.forEach(order => {
+      ordersDiv.innerHTML += `
+        <div class="order-card">
+          <div class="order-header">
+            <div class="order-id">ORDER #${order.id}</div>
+            <div class="order-date">
+              ${order.created_at ? new Date(order.created_at).toDateString() : ""}
+            </div>
+          </div>
+
+          <div class="order-body">
+            <div class="order-info">
+              <p>Items: ${order.items ? order.items.length : "-"}</p>
+              <p class="order-status status-placed">Order Placed</p>
+            </div>
+
+            <div class="order-total">
+              ₹${order.total_price}
+            </div>
+          </div>
+        </div>
+      `;
+    });
   });
-});
 </script>
 
 </body>

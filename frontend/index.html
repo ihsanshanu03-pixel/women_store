@@ -1,35 +1,241 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Women Clothing Store</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background: #fff;
+      color: #000;
+      padding: 40px;
+    }
+
+    /* ---------- BREADCRUMB ---------- */
+    .breadcrumb {
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .breadcrumb a {
+      color: #000;
+      text-decoration: underline;
+    }
+
+    /* ---------- HEADER ---------- */
+    .page-header h1 {
+      font-size: 46px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .page-header h1 span {
+      font-size: 16px;
+      font-weight: normal;
+      margin-left: 5px;
+    }
+
+    .page-header h2 {
+      margin-top: 10px;
+      font-size: 18px;
+      letter-spacing: 3px;
+      font-weight: 500;
+    }
+
+    /* ---------- CATEGORY STRIP ---------- */
+    .category-strip {
+      display: flex;
+      gap: 22px;
+      margin-top: 45px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+
+    .category-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-card {
+      min-width: 250px;
+      cursor: pointer;
+    }
+
+    .category-card img {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .category-card p {
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .category-card.active {
+      background: #000;
+      padding: 10px;
+    }
+
+    .category-card.active p {
+      color: #fff;
+    }
+
+    /* ---------- PRODUCTS GRID ---------- */
+    .products {
+      margin-top: 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+    }
+
+    .product-card h4 {
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .product-card p {
+      margin-top: 5px;
+      font-weight: bold;
+    }
+
+    /* ---------- MOBILE ---------- */
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+
+      .page-header h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <script>
-requireAuth();
-</script>
 
-
-<nav class="navbar">
-  <div class="logo">WomenStore</div>
-  <div class="links">
-    <a href="index.html">Home</a>
-    <a href="cart.html">Cart</a>
-    <a href="orders.html">Orders</a>
-    <a href="login.html" class="auth-link">Login</a>
-    <a href="signup.html" class="auth-link">Sign Up</a>
-    <button onclick="logout()" class="logout-btn">Logout</button>
-
-
-
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb">
+    <a href="#">Home</a> / <span>Women Clothing</span>
   </div>
-</nav>
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <h1>WOMEN CLOTHING <span id="count"></span></h1>
+    <h2>COLLECTION</h2>
+  </div>
+
+  <!-- CATEGORY STRIP -->
+  <div class="category-strip" id="categoryStrip"></div>
+
+  <!-- PRODUCTS -->
+  <div class="products" id="products"></div>
+
 <script>
-toggleAuthLinks();
+/* ===============================
+   CONFIG
+================================ */
+const API_URL = "http://127.0.0.1:8000";
+
+/* ===============================
+   ELEMENTS
+================================ */
+const categoryStrip = document.getElementById("categoryStrip");
+const productsContainer = document.getElementById("products");
+const countSpan = document.getElementById("count");
+
+let activeCategoryId = null;
+
+/* ===============================
+   LOAD CATEGORIES
+================================ */
+fetch(`${API_URL}/api/products/categories/`)
+  .then(res => res.json())
+  .then(categories => {
+    categories.forEach((cat, index) => {
+      const card = document.createElement("div");
+      card.className = "category-card";
+
+      if (index === 0) {
+        card.classList.add("active");
+        activeCategoryId = cat.id;
+        loadProducts(cat.id);
+      }
+
+      card.innerHTML = `
+        <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246">
+        <p>${cat.name.toUpperCase()}</p>
+      `;
+
+      card.onclick = () => setActiveCategory(cat.id, card);
+      categoryStrip.appendChild(card);
+    });
+  });
+
+/* ===============================
+   SET ACTIVE CATEGORY
+================================ */
+function setActiveCategory(categoryId, element) {
+  document.querySelectorAll(".category-card")
+    .forEach(el => el.classList.remove("active"));
+
+  element.classList.add("active");
+  activeCategoryId = categoryId;
+  loadProducts(categoryId);
+}
+
+/* ===============================
+   LOAD PRODUCTS
+================================ */
+function loadProducts(categoryId) {
+  productsContainer.innerHTML = "";
+
+  fetch(`${API_URL}/api/products/products/`)
+    .then(res => res.json())
+    .then(products => {
+      const filtered = products.filter(
+        p => p.category.id === categoryId
+      );
+
+      countSpan.innerText = `[${filtered.length}]`;
+
+      if (filtered.length === 0) {
+        productsContainer.innerHTML = "<p>No products found</p>";
+        return;
+      }
+
+      filtered.forEach(product => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+
+        card.innerHTML = `
+          <img src="${product.image}">
+          <h4>${product.name}</h4>
+          <p>₹${product.price}</p>
+        `;
+
+        productsContainer.appendChild(card);
+      });
+    });
+}
 </script>
 
-<div class="products" id="products"></div>
-
-<script src="js/app.js"></script>
 </body>
 </html>

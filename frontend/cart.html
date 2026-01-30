@@ -1,53 +1,273 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Cart</title>
+  <meta charset="UTF-8">
+  <title>Your Bag | Women Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: #000;
+    }
+
+    /* ---------- PAGE ---------- */
+    .page {
+      max-width: 1200px;
+      margin: auto;
+      padding: 60px 20px;
+    }
+
+    /* ---------- EMPTY CART ---------- */
+    .empty-cart {
+      max-width: 700px;
+      padding-top: 40px;
+      display: none;
+    }
+
+    .empty-cart h1 {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 25px;
+    }
+
+    .empty-cart p {
+      font-size: 16px;
+      color: #444;
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 35px;
+    }
+
+    .start-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #000;
+      color: #fff;
+      padding: 16px 32px;
+      text-decoration: none;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .start-btn:hover {
+      background: #333;
+    }
+
+    /* ---------- CART LAYOUT ---------- */
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 50px;
+    }
+
+    /* ---------- CART ITEM ---------- */
+    .cart-item {
+      display: flex;
+      gap: 20px;
+      border-bottom: 1px solid #ddd;
+      padding: 25px 0;
+    }
+
+    .cart-item img {
+      width: 130px;
+      height: 170px;
+      object-fit: cover;
+    }
+
+    .cart-info {
+      flex: 1;
+    }
+
+    .cart-info h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .cart-info p {
+      font-size: 14px;
+      margin: 4px 0;
+      color: #444;
+    }
+
+    .cart-price {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    /* ---------- SUMMARY ---------- */
+    .summary {
+      border: 1px solid #ddd;
+      padding: 30px;
+      height: fit-content;
+    }
+
+    .summary h2 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 25px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      font-size: 14px;
+    }
+
+    .summary-total {
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 18px;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      margin-top: 30px;
+      padding: 16px;
+      background: #000;
+      color: #fff;
+      border: none;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .checkout-btn:hover {
+      background: #333;
+    }
+
+    /* ---------- MOBILE ---------- */
+    @media (max-width: 900px) {
+      .cart-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .empty-cart h1 {
+        font-size: 36px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
+<div class="page">
 
+  <!-- EMPTY CART -->
+  <div id="emptyCart" class="empty-cart">
+    <h1>YOUR BAG IS EMPTY</h1>
+    <p>
+      Once you add something to your bag – it will appear here.
+      Ready to get started?
+    </p>
+    <a href="index.html" class="start-btn">GET STARTED →</a>
+  </div>
 
+  <!-- CART WITH ITEMS -->
+  <div id="cartLayout" class="cart-layout">
+    <div id="cart"></div>
 
-<h2>Your Cart</h2>
-<div id="cart"></div>
+    <div class="summary">
+      <h2>ORDER SUMMARY</h2>
 
-<!-- 1️⃣ Load JS file first -->
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span id="subtotal">₹0</span>
+      </div>
+
+      <div class="summary-row">
+        <span>Delivery</span>
+        <span>FREE</span>
+      </div>
+
+      <div class="summary-row summary-total">
+        <span>Total</span>
+        <span id="total">₹0</span>
+      </div>
+
+      <button class="checkout-btn" onclick="checkout()">
+        CHECKOUT
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- AUTH CHECK -->
 <script src="js/app.js"></script>
 
-<!-- 2️⃣ Then call function -->
 <script>
+  // must exist in app.js
   requireAuth();
-</script>
 
+  const API_URL = "http://127.0.0.1:8000";
+  const token = localStorage.getItem("token");
 
-<button onclick="checkout()">Checkout</button>
+  const cartDiv = document.getElementById("cart");
+  const emptyCart = document.getElementById("emptyCart");
+  const cartLayout = document.getElementById("cartLayout");
+  const subtotalEl = document.getElementById("subtotal");
+  const totalEl = document.getElementById("total");
 
-<script>
-const API_URL = "http://127.0.0.1:8000";
-const token = localStorage.getItem("token");
-
-fetch(`${API_URL}/api/cart/`, {
-  headers: { "Authorization": "Bearer " + token }
-})
-.then(res => res.json())
-.then(items => {
-  const div = document.getElementById("cart");
-  items.forEach(item => {
-    div.innerHTML += `<p>${item.product.name} - ${item.quantity}</p>`;
-  });
-});
-
-function checkout() {
-  fetch(`${API_URL}/api/orders/checkout/`, {
-    method: "POST",
+  fetch(`${API_URL}/api/cart/`, {
     headers: { "Authorization": "Bearer " + token }
   })
   .then(res => res.json())
-  .then(data => {
-    alert("Order placed!");
-    window.location.href = "orders.html";
+  .then(items => {
+
+    // EMPTY CART
+    if (!items || items.length === 0) {
+      emptyCart.style.display = "block";
+      cartLayout.style.display = "none";
+      return;
+    }
+
+    // CART HAS ITEMS
+    emptyCart.style.display = "none";
+    cartLayout.style.display = "grid";
+
+    let subtotal = 0;
+    cartDiv.innerHTML = "";
+
+    items.forEach(item => {
+      const price = item.product.price * item.quantity;
+      subtotal += price;
+
+      cartDiv.innerHTML += `
+        <div class="cart-item">
+          <img src="${item.product.image}">
+          <div class="cart-info">
+            <h3>${item.product.name}</h3>
+            <p>Quantity: ${item.quantity}</p>
+            <p class="cart-price">₹${price}</p>
+          </div>
+        </div>
+      `;
+    });
+
+    subtotalEl.innerText = `₹${subtotal}`;
+    totalEl.innerText = `₹${subtotal}`;
   });
-}
+
+  function checkout() {
+    fetch(`${API_URL}/api/orders/checkout/`, {
+      method: "POST",
+      headers: { "Authorization": "Bearer " + token }
+    })
+    .then(() => {
+      alert("Order placed successfully 🎉");
+      window.location.href = "orders.html";
+    });
+  }
 </script>
 
 </body>

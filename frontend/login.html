@@ -1,17 +1,223 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login</title>
+  <meta charset="UTF-8">
+  <title>Log in | Women Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #fff;
+    }
+
+    /* ---------- LAYOUT ---------- */
+    .login-wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ---------- LEFT IMAGE ---------- */
+    .login-image {
+      flex: 1;
+      background: url("https://images.unsplash.com/photo-1520975916090-3105956dac38") center/cover no-repeat;
+      padding: 50px;
+      color: #000;
+    }
+
+    .login-image h1 {
+      font-size: 44px;
+      font-weight: 800;
+      margin-top: 40px;
+      max-width: 420px;
+    }
+
+    .login-image p {
+      margin-top: 15px;
+      font-size: 16px;
+      max-width: 420px;
+      line-height: 1.5;
+    }
+
+    /* ---------- RIGHT FORM ---------- */
+    .login-form {
+      flex: 1;
+      padding: 60px 70px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .brand img {
+      width: 40px;
+    }
+
+    .brand span {
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .login-form h2 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .login-form .subtitle {
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    /* ---------- SOCIAL ---------- */
+    .social {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .social div {
+      width: 48px;
+      height: 48px;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .social img {
+      width: 22px;
+    }
+
+    /* ---------- INPUTS ---------- */
+    label {
+      font-size: 13px;
+      font-weight: bold;
+      display: block;
+      margin: 18px 0 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    /* ---------- BUTTON ---------- */
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #000;
+      color: #fff;
+      border: none;
+      font-size: 15px;
+      font-weight: bold;
+      margin-top: 30px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #333;
+    }
+
+    /* ---------- FOOTER ---------- */
+    .footer-text {
+      margin-top: 20px;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .footer-text a {
+      color: #000;
+      text-decoration: underline;
+      font-weight: bold;
+    }
+
+    /* ---------- MOBILE ---------- */
+    @media (max-width: 900px) {
+      .login-wrapper {
+        flex-direction: column;
+      }
+
+      .login-image {
+        height: 300px;
+      }
+
+      .login-form {
+        padding: 30px;
+      }
+
+      .login-image h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>Login</h2>
+<div class="login-wrapper">
 
-<input id="email" placeholder="Email"><br><br>
-<input id="password" type="password" placeholder="Password"><br><br>
-<button onclick="login()">Login</button>
-<a href="signup.html">Sign Up</a>
+  <!-- LEFT IMAGE SECTION -->
+  <div class="login-image">
+    <h1>JOIN OUR WOMEN CLUB TO UNLOCK MORE REWARDS</h1>
+    <p>
+      Join for free and enjoy exclusive collections,
+      offers and member-only benefits.
+    </p>
+  </div>
 
+  <!-- RIGHT LOGIN FORM -->
+  <div class="login-form">
+
+    <!-- BRAND -->
+    <div class="brand">
+      <!-- replace with your logo -->
+      <img src="https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg">
+      <span>WOMEN CLUB</span>
+    </div>
+
+    <h2>LOG IN OR SIGN UP</h2>
+    <p class="subtitle">
+      Enjoy members-only access to exclusive products,
+      experiences and offers.
+    </p>
+
+    <!-- SOCIAL (UI ONLY) -->
+    <div class="social">
+      <div><img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"></div>
+      <div><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png"></div>
+      <div><img src="https://cdn-icons-png.flaticon.com/512/0/747.png"></div>
+    </div>
+
+    <!-- FORM -->
+    <label>EMAIL ADDRESS *</label>
+    <input id="email" placeholder="Enter your email">
+
+    <label>PASSWORD *</label>
+    <input id="password" type="password" placeholder="Enter your password">
+
+    <button onclick="login()">LOG IN</button>
+
+    <div class="footer-text">
+      Don’t have an account?
+      <a href="signup.html">Sign up</a>
+    </div>
+
+  </div>
+</div>
 
 <script>
 const API_URL = "http://127.0.0.1:8000";
@@ -19,7 +225,7 @@ const API_URL = "http://127.0.0.1:8000";
 function login() {
   fetch(`${API_URL}/api/token/`, {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       email: email.value,
       password: password.value
@@ -27,10 +233,14 @@ function login() {
   })
   .then(res => res.json())
   .then(data => {
-    localStorage.setItem("token", data.access);
-    alert("Login success");
-    window.location.href = "index.html";
-  });
+    if (data.access) {
+      localStorage.setItem("token", data.access);
+      window.location.href = "index.html";
+    } else {
+      alert("Invalid email or password");
+    }
+  })
+  .catch(() => alert("Login failed"));
 }
 </script>
 
