@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Women Clothing Store{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <!-- You can link a global CSS here if you created one, or keep inline styles if preferred for now. 
+       Moving styles to static/css/style.css is recommended. -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Global styles that were in index.html */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background: #fff;
+            color: #000;
+            padding: 40px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .breadcrumb a {
+            text-decoration: underline;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- HEADER / NAV (To be expanded) -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+            {% if user.is_authenticated %}
+            <span>Welcome, {{ user.username }}</span> |
+            <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+            <a href="{% url 'login' %}">Login</a> |
+            <a href="{% url 'register' %}">Signup</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% block content %}
+    {% endblock %}
+
+    {% block scripts %}
+    {% endblock %}
+</body>
+
+</html>

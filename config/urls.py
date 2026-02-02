@@ -7,15 +7,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/accounts/', include('accounts.urls')),
-    path('api/token/', TokenObtainPairView.as_view()),
-    path('api/token/refresh/', TokenRefreshView.as_view()),
-    path('api/products/', include('products.urls')),
-    path('api/cart/', include('cart.urls')),
-    path('api/orders/', include('orders.urls')),
-
-
+    path('accounts/', include('accounts.urls')),
+    path('', include('products.urls')),
+    # path('api/cart/', include('cart.urls')),
+    # path('api/orders/', include('orders.urls')),
 ]
+
+
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

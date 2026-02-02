@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% block title %}Log in | Women Store{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Reusing existing styles */
+  .login-wrapper {
+    display: flex;
+    min-height: 80vh;
+  }
+
+  /* adjusted height */
+  .login-image {
+    flex: 1;
+    background: url("https://images.unsplash.com/photo-1520975916090-3105956dac38") center/cover no-repeat;
+    padding: 50px;
+    color: #000;
+  }
+
+  .login-image h1 {
+    font-size: 44px;
+    font-weight: 800;
+    margin-top: 40px;
+    max-width: 420px;
+  }
+
+  .login-image p {
+    margin-top: 15px;
+    font-size: 16px;
+    max-width: 420px;
+    line-height: 1.5;
+  }
+
+  .login-form {
+    flex: 1;
+    padding: 60px 70px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  .brand img {
+    width: 40px;
+  }
+
+  .brand span {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+
+  .login-form h2 {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    color: #555;
+    font-size: 14px;
+    margin-bottom: 25px;
+  }
+
+  .social {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+  }
+
+  .social div {
+    width: 48px;
+    height: 48px;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .social img {
+    width: 22px;
+  }
+
+  label {
+    font-size: 13px;
+    font-weight: bold;
+    display: block;
+    margin: 18px 0 6px;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+
+  button {
+    width: 100%;
+    padding: 14px;
+    background: #000;
+    color: #fff;
+    border: none;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 30px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #333;
+  }
+
+  .footer-text {
+    margin-top: 20px;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .footer-text a {
+    color: #000;
+    text-decoration: underline;
+    font-weight: bold;
+  }
+
+  @media (max-width: 900px) {
+    .login-wrapper {
+      flex-direction: column;
+    }
+
+    .login-image {
+      height: 300px;
+    }
+
+    .login-form {
+      padding: 30px;
+    }
+
+    .login-image h1 {
+      font-size: 32px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+
+  <!-- LEFT IMAGE SECTION -->
+  <div class="login-image">
+    <h1>JOIN OUR WOMEN CLUB TO UNLOCK MORE REWARDS</h1>
+    <p>Join for free and enjoy exclusive collections, offers and member-only benefits.</p>
+  </div>
+
+  <!-- RIGHT LOGIN FORM -->
+  <div class="login-form">
+
+    <!-- BRAND -->
+    <a href="{% url 'home' %}" class="brand" style="text-decoration:none; color:inherit;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg" alt="Logo">
+      <span>WOMEN CLUB</span>
+    </a>
+
+    <h2>LOG IN</h2>
+    <p class="subtitle">Enjoy members-only access to exclusive products.</p>
+
+    <!-- FORM -->
+    <form method="post">
+      {% csrf_token %}
+      <!-- Display form errors -->
+      {% if form.errors %}
+      <div style="color:red; margin-bottom:10px;">
+        <p>Please correct the errors below:</p>
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+
+      <div style="margin-bottom: 15px;">
+        <label for="{{ form.username.id_for_label }}">USERNAME *</label>
+        {{ form.username }}
+        <!-- form.username renders the input with standard django attrs. 
+                 If you need custom class, you can add widget tweaks or just styling on 'input' tag in CSS matches generated input -->
+      </div>
+
+      <div style="margin-bottom: 15px;">
+        <label for="{{ form.password.id_for_label }}">PASSWORD *</label>
+        {{ form.password }}
+      </div>
+
+      <button type="submit">LOG IN</button>
+    </form>
+
+    <div class="footer-text">
+      Don’t have an account?
+      <a href="{% url 'register' %}">Sign up</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
